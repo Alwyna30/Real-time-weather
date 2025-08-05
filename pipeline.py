@@ -3,7 +3,7 @@ import fitz
 from typing import TypedDict
 from langgraph.graph import StateGraph, START, END
 
-# ✅ Use HuggingFace free embeddings
+# ✅ Free HuggingFace embeddings (requires sentence-transformers)
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Qdrant
 from qdrant_client import QdrantClient
@@ -13,10 +13,10 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 # 1. Define LangGraph State
 # -------------------------------
 class InterviewState(TypedDict):
-    query: str        # user's question
-    next_step: str    # weather_api or rag_pipeline
-    answer: str       # raw answer from API or RAG
-    final_answer: str # refined LLM response
+    query: str
+    next_step: str
+    answer: str
+    final_answer: str
 
 # -------------------------------
 # 2. LangGraph Nodes
@@ -33,8 +33,8 @@ def decision_node(state: InterviewState) -> InterviewState:
     return state
 
 def weather_api_node(state: InterviewState) -> InterviewState:
-    """Fetch real-time weather data using OpenWeatherMap API (Free Tier)."""
-    OPENWEATHER_API_KEY = "YOUR_API_KEY"  # Replace with your OpenWeatherMap API key
+    """Fetch real-time weather data using OpenWeatherMap API."""
+    OPENWEATHER_API_KEY = "YOUR_API_KEY"  # replace with your free API key
     query = state['query'].lower()
 
     if " in " in query:
@@ -58,7 +58,7 @@ def weather_api_node(state: InterviewState) -> InterviewState:
     return state
 
 # -------------------------------
-# 3. Setup Resume RAG (Free Embeddings)
+# 3. Setup Resume RAG
 # -------------------------------
 pdf_path = "Alwyna Data Science Resume.pdf"
 doc = fitz.open(pdf_path)
@@ -94,12 +94,9 @@ def rag_pipeline_node(state: InterviewState) -> InterviewState:
     return state
 
 # -------------------------------
-# 4. Simple AI Refinement
+# 4. Simple AI Refinement (No Paid LLM)
 # -------------------------------
 def llm_processing_node(state: InterviewState) -> InterviewState:
-    """
-    Since we are avoiding paid APIs, this node simply formats the answer nicely.
-    """
     state["final_answer"] = f"User asked: {state['query']}\n\nAnswer: {state['answer']}"
     return state
 
