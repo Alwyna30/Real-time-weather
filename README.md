@@ -1,15 +1,15 @@
 # Real-Time Weather & Resume Q&A Agent
 
 This project is an AI-powered agent built using LangChain, LangGraph, and LangSmith.  
-It can:
+It demonstrates:
 
-- Fetch **real-time weather and temperature data** using the OpenWeatherMap API  
-- Provide **human-friendly weather summaries** using LLaMA 3 (Ollama)  
-- Answer **questions from a PDF document** using RAG (Retrieval-Augmented Generation)  
-- Decide **automatically** whether to call the Weather API or search the PDF using LangGraph  
-- Log and evaluate all responses in **LangSmith**  
-- Include a **Streamlit UI** for an interactive demo
+Real-Time Weather Fetching using OpenWeatherMap API
 
+PDF Question Answering using Retrieval-Augmented Generation (RAG)
+
+LangGraph for building a simple multi-node AI pipeline
+
+Streamlit UI for interactive queries
 ---
 
 ## Features
@@ -77,25 +77,33 @@ Example queries:
 "Tell me about your education" → Returns answer from PDF
 
 ## Screenshots
-1. LangSmith Trace
+#### 1. LangSmith Trace
 
 <img width="1919" height="914" alt="image" src="https://github.com/user-attachments/assets/4ab2ea1c-6a9f-4c23-87bd-7fa988db5de1" />
+
 <img width="1913" height="910" alt="image" src="https://github.com/user-attachments/assets/2eb122ad-c167-4d1b-b47a-1e889bf19615" />
 
 
-2. Weather Query Result
+#### 2. Weather Query Result
+
 <img width="1912" height="912" alt="image" src="https://github.com/user-attachments/assets/c526faf5-9c81-4362-9d36-dcafa6de09c7" />
 
-3. Streamlit UI
+
+#### 3. Streamlit UI
 (https://real-time-weather-teq3kzsyc38vbvdzaose9l.streamlit.app/)
 
 ## Demo Video
 Demo Video Link: (https://drive.google.com/file/d/1ww-nMnUg8m9dqgVXjvGHvKUONpzBtKMh/view?usp=sharing)
 
-## Evaluation Checklist
- Fetches real-time temperature and weather
- Answers questions from PDF (RAG)
- Branching logic using LangGraph
- LangSmith logging enabled
- Streamlit UI demo working
- README.md includes screenshots and demo link
+## Conclusion
+This project successfully demonstrates how to combine real-time weather data retrieval and PDF-based question answering in a single interactive Streamlit application.
+
+Key takeaways:
+
+Integrated LangGraph for a modular AI workflow.
+
+Implemented RAG (Retrieval-Augmented Generation) for resume queries.
+
+Achieved real-time weather updates using OpenWeatherMap API.
+
+Deployed a fully functional Streamlit web app ready for public use.
