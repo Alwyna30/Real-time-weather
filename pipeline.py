@@ -3,7 +3,7 @@ import fitz
 from typing import TypedDict
 from langgraph.graph import StateGraph, START, END
 
-# ✅ Free HuggingFace embeddings (requires sentence-transformers)
+# Free HuggingFace embeddings (requires sentence-transformers)
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Qdrant
 from qdrant_client import QdrantClient
@@ -34,7 +34,7 @@ def decision_node(state: InterviewState) -> InterviewState:
 
 def weather_api_node(state: InterviewState) -> InterviewState:
     """Fetch real-time weather data using OpenWeatherMap API."""
-    OPENWEATHER_API_KEY = "YOUR_API_KEY"  # replace with your free API key
+    OPENWEATHER_API_KEY = "f15cf1878bbc75946d59bea5d6dc0da1"  
     query = state['query'].lower()
 
     if " in " in query:
