@@ -78,16 +78,19 @@ Example queries:
 
 ## Screenshots
 1. LangSmith Trace
-(Insert screenshot showing temperature + PDF logs)
+
+<img width="1919" height="914" alt="image" src="https://github.com/user-attachments/assets/4ab2ea1c-6a9f-4c23-87bd-7fa988db5de1" />
+<img width="1913" height="910" alt="image" src="https://github.com/user-attachments/assets/2eb122ad-c167-4d1b-b47a-1e889bf19615" />
+
 
 2. Weather Query Result
-(Insert screenshot showing temperature output)
+<img width="1912" height="912" alt="image" src="https://github.com/user-attachments/assets/c526faf5-9c81-4362-9d36-dcafa6de09c7" />
 
 3. Streamlit UI
-(Insert screenshot of the running Streamlit app)
+(https://real-time-weather-teq3kzsyc38vbvdzaose9l.streamlit.app/)
 
 ## Demo Video
-Demo Video Link: [Insert Google Drive or Loom link here]
+Demo Video Link: (https://drive.google.com/file/d/1ww-nMnUg8m9dqgVXjvGHvKUONpzBtKMh/view?usp=sharing)
 
 ## Evaluation Checklist
  Fetches real-time temperature and weather
