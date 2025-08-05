@@ -1,30 +1,31 @@
 import requests
-import fitz
 from typing import TypedDict
 from langgraph.graph import StateGraph, START, END
-
-# Free HuggingFace embeddings (requires sentence-transformers)
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Qdrant
-from qdrant_client import QdrantClient
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from qdrant_client import QdrantClient
+import fitz  # PyMuPDF for PDF processing
 
-# -------------------------------
-# 1. Define LangGraph State
-# -------------------------------
+# --------------- CONFIG ----------------
+OPENWEATHER_API_KEY = "f15cf1878bbc75946d59bea5d6dc0da1" 
+
+# Initialize embedding model (free, HuggingFace)
+embedding_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+
+# --------------- STATE ----------------
 class InterviewState(TypedDict):
     query: str
     next_step: str
     answer: str
     final_answer: str
 
-# -------------------------------
-# 2. LangGraph Nodes
-# -------------------------------
+# --------------- FUNCTIONS ----------------
 def user_input_node(state: InterviewState) -> InterviewState:
     return state
 
 def decision_node(state: InterviewState) -> InterviewState:
+    """Decide if query is about weather or PDF"""
     query = state['query'].lower()
     if "weather" in query or "temperature" in query:
         state["next_step"] = "weather_api"
@@ -32,13 +33,12 @@ def decision_node(state: InterviewState) -> InterviewState:
         state["next_step"] = "rag_pipeline"
     return state
 
-def weather_api_node(state: dict) -> dict:
-    """Fetches real-time weather data using OpenWeatherMap."""
+def weather_api_node(state: InterviewState) -> InterviewState:
+    """Fetch real-time weather data using OpenWeatherMap API"""
     query = state['query'].lower()
 
-    # Extract city name more intelligently
+    # Clean the query to extract city name
     city = query
-    # Remove common words
     for word in ["what", "is", "the", "temperature", "weather", "of", "in", "today", "now", "currently", "?", ".", ","]:
         city = city.replace(word, "")
     city = city.strip()
@@ -56,24 +56,19 @@ def weather_api_node(state: dict) -> dict:
         state["answer"] = f"Error fetching weather data: {str(e)}"
     return state
 
-
-# -------------------------------
-# 3. Setup Resume RAG
-# -------------------------------
-pdf_path = "Alwyna Data Science Resume.pdf"
+# --------- PDF / RAG Pipeline ---------
+pdf_path = "Alwyna Data Science Resume.pdf"  # Make sure this file is in your folder
 doc = fitz.open(pdf_path)
 
 resume_text = ""
 for page in doc:
     resume_text += page.get_text()
 
+# Split text into chunks
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
 resume_chunks = text_splitter.split_text(resume_text)
 
-# ✅ Use HuggingFace Embeddings
-embedding_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-
-# ✅ Create in-memory Qdrant vector store
+# Create in-memory Qdrant vector store
 qdrant = QdrantClient(":memory:")
 vectorstore = Qdrant.from_texts(
     texts=resume_chunks,
@@ -84,6 +79,7 @@ vectorstore = Qdrant.from_texts(
 retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
 
 def rag_pipeline_node(state: InterviewState) -> InterviewState:
+    """Answer questions from the PDF using RAG"""
     query = state['query']
     relevant_docs = retriever.invoke(query)
     if not relevant_docs:
@@ -93,16 +89,12 @@ def rag_pipeline_node(state: InterviewState) -> InterviewState:
         state["answer"] = f"Based on the PDF:\n{combined_context}"
     return state
 
-# -------------------------------
-# 4. Simple AI Refinement (No Paid LLM)
-# -------------------------------
 def llm_processing_node(state: InterviewState) -> InterviewState:
+    """Simulated AI response (free, no OpenAI charges)"""
     state["final_answer"] = f"User asked: {state['query']}\n\nAnswer: {state['answer']}"
     return state
 
-# -------------------------------
-# 5. Build and Compile Graph
-# -------------------------------
+# --------------- BUILD THE GRAPH ----------------
 graph_builder = StateGraph(InterviewState)
 graph_builder.add_node("user_input", user_input_node)
 graph_builder.add_node("decision", decision_node)
@@ -115,7 +107,10 @@ graph_builder.add_edge("user_input", "decision")
 graph_builder.add_conditional_edges(
     "decision",
     lambda state: state["next_step"],
-    {"weather_api": "weather_api", "rag_pipeline": "rag_pipeline"}
+    {
+        "weather_api": "weather_api",
+        "rag_pipeline": "rag_pipeline",
+    }
 )
 graph_builder.add_edge("weather_api", "llm_processing")
 graph_builder.add_edge("rag_pipeline", "llm_processing")
