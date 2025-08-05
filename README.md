@@ -9,6 +9,8 @@ PDF Question Answering using Retrieval-Augmented Generation (RAG)
 
 LangGraph for building a simple multi-node AI pipeline
 
+This project has been manually tested to ensure that both the real-time weather functionality and the resume Q&A logic work correctly.
+
 Streamlit UI for interactive queries
 ---
 
