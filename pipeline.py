@@ -32,17 +32,16 @@ def decision_node(state: InterviewState) -> InterviewState:
         state["next_step"] = "rag_pipeline"
     return state
 
-def weather_api_node(state: InterviewState) -> InterviewState:
-    """Fetch real-time weather data using OpenWeatherMap API."""
-    OPENWEATHER_API_KEY = "f15cf1878bbc75946d59bea5d6dc0da1"  
+def weather_api_node(state: dict) -> dict:
+    """Fetches real-time weather data using OpenWeatherMap."""
     query = state['query'].lower()
 
-    if " in " in query:
-        city = query.split(" in ")[-1].replace("?", "").strip()
-        for word in ["today", "tomorrow", "now", "currently"]:
-            city = city.replace(word, "").strip()
-    else:
-        city = query
+    # Extract city name more intelligently
+    city = query
+    # Remove common words
+    for word in ["what", "is", "the", "temperature", "weather", "of", "in", "today", "now", "currently", "?", ".", ","]:
+        city = city.replace(word, "")
+    city = city.strip()
 
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={OPENWEATHER_API_KEY}&units=metric"
     try:
@@ -56,6 +55,7 @@ def weather_api_node(state: InterviewState) -> InterviewState:
     except Exception as e:
         state["answer"] = f"Error fetching weather data: {str(e)}"
     return state
+
 
 # -------------------------------
 # 3. Setup Resume RAG
